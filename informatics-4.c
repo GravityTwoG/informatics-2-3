@@ -1,14 +1,17 @@
 #include <stdio.h>
+#include <windows.h>
 
 int toDigit(int A[], int a);
 int reverseInt(int number);
-int task11(int input[],int output[], int inputLength);
 void task6();
 void task16();
+int task11(int input[],int output[], int inputLength);
 void task19();
 
 int main() {
-    task16();
+    task6();
+    // task16();
+    system("pause");
 }
 
 int toDigit(int array[], int length) {
@@ -47,13 +50,64 @@ int isPrime(int number) {
 
 //6. Прогулка по улице. Мегамозг живет и работает на одной улице. Из дома до работы он ходит пешком. Однажды он сосчитал сумму номеров домов, которые он проходил мимо (включая номер дома и номер здания, где работает). В сумме он получил 297. Назовите номера домов, в которых живет и работает Мегамозг, с учетом того, что между домом и работой Мегамозга не менее 8 домов (не включая дом и работу) и дома он считал только по одной стороне улицы. Расположение домов на улицах стандартное, в номерах домов нет индексов-букв.
 void task6() {
+    int sum;
+    int homeAddress;
+    int workAddress;
+
+    // Мегамозг живёт на улице с нечётными номерами,
+    // так как сумма номеров нечётная, а дома он считал только по одной стороне улицы.
+    // Перебираем каждое нечётное значение дома от 1 до Z, почему Z надо обосновать  
+    // с количеством домов, которые он проходил мимо от 8 до X, почему X надо обосновать
+    for (homeAddress = 1; homeAddress < 297; homeAddress +=2) {
+        int startWithNewHomeAddress = 0;
+        // Считаем сумму при текущем начальном доме и разном кол-ве домов.
+        for (int otherHousesAmount = 8; otherHousesAmount < 100 && !startWithNewHomeAddress; otherHousesAmount++) {
+            printf("Way: (%d) ", homeAddress);
+            sum = homeAddress;
+            int house;
+            // Сумма номеров домов, которые Мегамозг прошёл мимо
+            int otherHouses = 0;
+            // Добавляем все номера домов между homeAddress и workAddress
+            for (house = homeAddress+2; house < homeAddress+otherHousesAmount*2+1; house+=2) {
+                sum += house;
+                otherHouses += house;
+                printf("%d ", house);
+            }
+
+            workAddress = house;
+            printf("(%d). ", workAddress);
+            sum += workAddress;
+            printf("Sum: %d ", sum);
+            printf("otherHousesAmount: %d ", otherHousesAmount);
+
+            if (sum == 297) {
+                printf("Answer is found: ");
+                printf("Home: №%d ", homeAddress);
+                printf("Work: №%d\n\n", workAddress);
+            }
+            // Прерываем вычисления, если при таком homeAddress и 8 домами
+            // сумма превышает нужную.
+            // При дальнейшем увеличении homeAddress и кол-ва домов, ответ мы всё равно не найдём
+            if (otherHousesAmount == 8 && sum > 297) {
+                printf("Stopping computations. Sum of houses bigger than needed\n");
+                return;
+            }
+            if (sum > 297) {
+                printf("Wrong way\n\n");
+                // Переходим на следующий homeAddress, т.к при текущем homeAddress
+                // и количестве домов сумма получается слишком большой
+                startWithNewHomeAddress = 1;
+            }
+            printf("\n");
+        }
+    }
 }
 
 //16. Числовой ребус: Найдите числа, зашифрованные словами КУБ и БУК, если известно, что число КУБ - действительно является кубом некоторого числа, а БУК - простое число.
 void task16() {
     for (int i = 5; i < 10; i++) {
         int digits[3] = {0};
-        toDigit(digits ,i*i*i);
+        toDigit(digits ,i*i*i); // Раскладываем число в массив цифр
         
         // В числе не должно быть одинаковых цифр
         if (digits[0] == digits[1] || 
@@ -62,10 +116,9 @@ void task16() {
                 continue;
         }
 
-        int reversedCube = reverseInt(i*i*i);
-        if (isPrime(reversedCube)) {
-            printf("%d ", i*i*i);
-            printf("%d\n", reversedCube);
+        int reversedCube = reverseInt(i*i*i); // Переворачиваем число
+        if (isPrime(reversedCube)) { // Проверяем простое ли число получилось
+            printf("%d %d\n", i*i*i, reversedCube);
             printf("Answer is: %d\n", i*i*i);
         }
     }
