@@ -4,12 +4,13 @@
 int toDigit(int A[], int a);
 int reverseInt(int number);
 void task6();
+void task6math();
 void task16();
 int task11(int input[],int output[], int inputLength);
 void task19();
 
 int main() {
-    task6();
+    task6math();
     // task16();
     system("pause");
 }
@@ -52,8 +53,8 @@ int isPrime(int number) {
 void task6() {
     // Мегамозг живёт на улице с нечётными номерами,
     // так как сумма номеров нечётная, а дома он считал только по одной стороне улицы.
-    // Перебираем каждое нечётное значение дома от 1 до Z, почему Z надо обосновать  
-    // с количеством домов, которые он проходил мимо от 8 до X, почему X надо обосновать
+    // Перебираем каждое нечётное значение дома  
+    // с разным количеством домов 
     for (int homeAddress = 1; homeAddress < 297; homeAddress += 2) {
         int startWithNewHomeAddress = 0;
         // Считаем сумму при текущем начальном доме и разном кол-ве домов.
@@ -98,6 +99,35 @@ void task6() {
     }
 }
 
+void task6math() {
+    // Мегамозг живёт на улице с нечётными номерами,
+    // так как сумма номеров нечётная, а дома он считал только по одной стороне улицы.
+    // Перебираем каждое нечётное значение дома  
+    // с разным количеством домов 
+    for (int homeAddress = 1; homeAddress < 297; homeAddress += 2) {
+        int sum = 0;
+        // Считаем сумму при текущем начальном доме и разном кол-ве домов, включая рабочее здание
+        for (int housesAmount = 10; housesAmount < 100 && sum <= 297; housesAmount++) {
+            // an = a1 + (n-1)*d
+            int workAddress = homeAddress + (housesAmount-1) * 2;
+            // S = (a1 + an)/2*n
+            sum = (((homeAddress + workAddress) / 2) * housesAmount);
+            if (sum == 297) {
+                printf("Answer is found: ");
+                printf("Home: №%d ", homeAddress);
+                printf("Work: №%d\n", workAddress);
+            } 
+            // Прерываем вычисления, если при таком homeAddress и 10 домах
+            // сумма превышает нужную.
+            // При дальнейшем увеличении homeAddress и кол-ва домов, ответ мы всё равно не найдём
+            if (housesAmount == 10 && sum > 297) {
+                printf("Stopping computations. Sum of houses bigger than needed\n");
+                return;
+            }
+        }
+    }
+}
+
 //16. Числовой ребус: Найдите числа, зашифрованные словами КУБ и БУК, если известно, что число КУБ - действительно является кубом некоторого числа, а БУК - простое число.
 void task16() {
     // Так как число КУБ - куб некоторого числа, то проверять будем только
@@ -115,8 +145,7 @@ void task16() {
 
         int reversedCube = reverseInt(i*i*i); // Переворачиваем число
         if (isPrime(reversedCube)) { // Проверяем простое ли число получилось
-            printf("%d %d\n", i*i*i, reversedCube);
-            printf("Answer is: %d\n", i*i*i);
+            printf("Answer is: %d %d\n", i*i*i, reversedCube);
         }
     }
 }
