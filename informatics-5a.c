@@ -14,7 +14,7 @@
 
 unsigned long long int factorial(int number);
 double sequenceElement(float x, int n);
-double sequence(float x, int n);
+void sequence(float x);
 
 int main() {
   //1. Убедиться, что на этом диапазоне элемент суммы ряда стремится к 0
@@ -34,7 +34,7 @@ int main() {
       double res = sequenceElement(x, n);
       printf("| %5.4f ", res);
 
-      if (res > 0.0001) {
+      if (res > 0.00005) {
         allZero = 0;
       }
     }
@@ -51,35 +51,18 @@ int main() {
   printf("\n");  
 
   // Изменение суммы ряда в зависимости от кол-ва элементов
-  printf("|  n\\x  ");
+  printf("|  x\\n   ");
+  printf("| ch(x)  ");
+  for (int i = 1; i <= 15; i++) {
+    printf("| n: %2d  ", i);
+  }
+  printf("|\n");
   for (float x = 0.1; x < 1; x += 0.1) {
     printf("| x: %.1f ", x);
-  }
-  printf("|\n");
-  printf("| ch(x) ");
-  for (float x = 0.1; x < 1; x += 0.1) {
     printf("| %5.4f ", cosh(x));
-  }
-  printf("|\n");
-  for (int i = 1; i <= n; i++) {
-    printf("| n: %2d ", i);
-    for (float x = 0.1; x < 1; x += 0.1) {
-      printf("| %5.4f ", sequence(x, i));
-    }
-    printf("|\n");
+    sequence(x);
   }
   printf("\n");
-
-  //2. Вычислить значения суммы ряда и контрольной функции с точностью до 4 знаков после запятой 
-  printf("| Sequence sum  |   ch(x)  |   Diff   |\n");
-  for (float x = 0.1; x < 1; x += 0.1) {
-    double sequenceSum = sequence(x, n);
-    printf("| x: %.1f ", x);
-    printf("%5.4f ", sequenceSum);
-    printf("|  %5.4f  ", cosh(x));
-    printf("|  %5.4f  |", fabs(sequenceSum - cosh(x)));
-    printf("\n");
-  }
 
   return 0;
 }
@@ -103,27 +86,19 @@ double sequenceElement(float x, int n) {
   return xPow/currentFactorial;
 }
 
-// Возвращает сумму ряда при данном х и n
-double sequence(float x, int n) {
+void sequence(float x) {
   double sum = 1;
-  for (int i = 1; i <=n; i++) {
-    double res = sequenceElement(x, i);
-    sum += res;
-  }
-
-  return sum;
+  double prevSum = 1;
+  double prev = 1;
+  int i = 1;  
+  do {
+    double kf = (x*x)/(2*i*(2*i-1)); // коэффициент перехода
+    double current = prev*kf;
+    prev = current;
+    i++;
+    prevSum = sum;
+    sum = prevSum + current;
+    (sum - prevSum) >= 0.00005 ? printf("| %5.4f ", sum) : 0;
+  } while((sum - prevSum) > 0.0001);
+  printf("|\n");
 }
-
-// // Возвращает сумму ряда при данном х и n
-// double sequence(float x, int n) {
-//   double sum = 1.0;
-//   double prev = 1.0;  
-//   for (int i = 1; i <=n; i++) {
-//     double kf = (x*x)/(2*i*(2*i-1)); // коэффициент перехода
-//     double current = prev*kf;
-//     sum += current;
-//     prev = current;
-//   }
-
-//   return sum;
-// }
