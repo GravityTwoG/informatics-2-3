@@ -3,73 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-void printString(char* string);
-int expandStringSize(char* string, int newSize);
-void deletePartOfString(char string[], int start, int end);
-void addPartOfString(char string[], int start, int end, char targetString[]);
-
-int findNextCharStart(char symbol, int from, char string[]);
-int findRepeatedFragment(char string[], int from, int* start, int* end);
-
-//6. Найти в строке два одинаковых фрагмента (не включающих в себя пробелы) длиной более 5 символов,
-//   скопировать их в выходную строку и удалить. Повторять этот процесс, пока такие фрагменты находятся.
-//   Остаток строки добавить в выходную.
-int main() {
-  char string[] = "Lorem loreet, ipsum dolor sit amet,#startregion consectetur adipiscing loreet, #pragma endregion, adipiscing el";
-  
-  int outputStringLength = 10;
-  int outputStringContains = 0;
-  // Создаем указатель на первый элемент массива символов длиной outputStringLength + 1
-  char* outputString = (char*)calloc(outputStringLength + 1, 1);
-  if (!outputString) return -1;
-  // В строке должен быть символ окончания строки
-  outputString[0] = '\0';
-
-  int from = 0;
-  while (1) {
-    int start = -1;
-    int end = -1;
-    // Находим в строке повторяющийся фрагмент
-    int res = findRepeatedFragment(string, from, &start, &end);
-    if (res == -1) break;
-    if (start != -1 && end != -1) {
-      int repeatedFragmentLength = end - start + 1;
-      // Увеличиваем размер выходной строки если необходимо
-      if (outputStringContains + repeatedFragmentLength > outputStringLength) {
-        int newSize = outputStringContains + repeatedFragmentLength > outputStringLength*2
-          ? (outputStringContains + repeatedFragmentLength)*2
-          : outputStringLength*2;
-        int resizeRes = expandStringSize(outputString, outputStringLength*2);
-        if (resizeRes == -1) return -1;
-        outputStringLength *= 2;
-      }
-
-      // Копируем фрагмент в выходную строку 
-      addPartOfString(string, start, end, outputString);
-      outputStringContains += repeatedFragmentLength;
-
-      // Удаляем фрагмент из строки 
-      deletePartOfString(string, start, end);
-      printString(outputString);
-      printf("\n");
-    }
-    from = res;
-  }  
-
-  int stringLength = strlen(string);
-  if (outputStringContains + stringLength > outputStringLength) {
-    int res = expandStringSize(outputString, outputStringContains + stringLength);
-    if (res == -1) return -1;
+void printSubstring(char string[], int start, int end) {
+  for (int i = start; i <= end; i++) {
+    printf("%c", string[i]);
   }
-
-  // Остаток строки добавляем в выходную
-  strcat(outputString, string);
-  // addPartOfString(string, 0, strlen(string), outputString);
-  printf("Result:\n");
-  printString(outputString);
-
-  // free(outputString);
-  return 0;
 }
 
 void printString(char* string) {
@@ -79,41 +16,75 @@ void printString(char* string) {
     cursor++;
   }
 }
-
-// Увеличивает размер строки до newSize
-int expandStringSize(char* string, int newSize) {
-  char* tmp = (char*)realloc(string,  newSize);
-  if (!tmp) return -1;
-  string = tmp;
-  int stringLength = strlen(string);
-  for (int i = stringLength+1; i < newSize; i++) {
-    string[i] = ' ';
-  }
-  return 0;
-}
-
 void addPartOfString(char from[], int start, int end, char to[]) {
   int partLength = end - start + 1;
   int toLength = strlen(to);
   for (int i = start; i <= end; i++) {
     to[toLength++] = from[i];
   }
-  to[toLength] = '\0';
 }
-
 // Удаляет часть строки
 void deletePartOfString(char string[], int start, int end) {
-  int cursor = 0;
-  while (string[end + cursor + 1] != '\0') {
-    string[start + cursor] = string[end + cursor + 1];
+  int stringLength = end - start + 1;
+  int cursor = start;
+  do {
+    string[cursor] = string[cursor + stringLength];
     cursor++;
-  }
-  string[start + cursor + 1] = '\0';
+  } while (string[cursor + stringLength] != '\0');
+  string[cursor] = '\0';
 }
 
-// Возвращает начальный индекс символа в строке, после индекса from
-int findNextCharStart(char symbol, int from, char string[]) {
-  int cursor = from + 1;
+int findNextCharIndex(char symbol, int from, char string[]);
+int findRepeatedFragment(char string[], int from, int* start, int* end);
+
+//6. Найти в строке два одинаковых фрагмента (не включающих в себя пробелы) длиной более 5 символов,
+//   скопировать их в выходную строку и удалить. Повторять этот процесс, пока такие фрагменты находятся.
+//   Остаток строки добавить в выходную.
+int main() {
+  // char string[] = "\nBut I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?";
+  char string[] = "123456 123456Hello123456 123456World123456 123456!";
+  int stringLength = strlen(string);
+  
+  // Выделяем память для строки
+  char* outputString = (char*)calloc(stringLength + 1, sizeof(char));
+  if (!outputString) return -1;
+  // В строке должен быть символ окончания строки
+  outputString[0] = '\0';
+
+  printf("Original string:\n");
+  printString(string);
+  printf("\n\n");
+
+  int from = 0;
+  while (1) {
+    int start = -1;
+    int end = -1;
+    int res = findRepeatedFragment(string, from, &start, &end);
+    if (res == -1) break;
+    if (start != -1 && end != -1) {
+      printf("Fragment: ");
+      printSubstring(string, start, end);
+      printf("\n");
+      addPartOfString(string, start, end, outputString);
+      deletePartOfString(string, start, end);
+    }
+    from = res;
+  }  
+
+  // Остаток строки добавляем в выходную
+  strcat(outputString, string);
+  printf("\nResult:\n");
+  printString(outputString);
+  printf("\n");
+
+  free(outputString);
+  return 0;
+}
+
+// Возвращает индекс символа в строке, найденного после индекса from
+// или -1 если такого символа нет
+int findNextCharIndex(char symbol, int from, char string[]) {
+  int cursor = from;
   while (1) {
     if (string[cursor] == '\0') return -1;
     if (string[cursor] == symbol) return cursor;
@@ -121,80 +92,94 @@ int findNextCharStart(char symbol, int from, char string[]) {
   }
 }
 
-// Находит совпадающие фрагменты в строке, меняет входные переменные start и end
-// на индексы первого фрагмента
-// Если в строке нет фрагментов длиной более 5 символов, возвращает -1
-int findRepeatedFragment(char string[], int from, int* start, int* end) {
+// находит фрагмент длиной более 5 в строке
+int findFragment(char string[], int from, int* start, int* length) {
   int fragmentStart = 0;
-  int fragmentEnd = 0;
-  int fragmentLength = 0;
+  int fragmentLength = 0; 
   int cursor = from;
   // Ищем фрагмент длиной более 5 в строке
   while (1) {
     if (string[cursor] == '\0') {
-      if (fragmentLength > 5) {
-        fragmentEnd = cursor - 1;
-        break;
-      }
+      if (fragmentLength > 5) break;
       // Если достигнут конец строки и не найден фрагмент длиной больше 5
       return -1;
     }
-
     if (string[cursor] != ' ') {
       if (fragmentLength == 0) fragmentStart = cursor;
-      fragmentEnd = cursor;
       fragmentLength++;
     } else if (fragmentLength > 5) {
       break;
     } else {
       fragmentStart = 0;
       fragmentLength = 0;
-      fragmentEnd = 0;
-    } 
-    
+    }  
     cursor++;
   }
+  *start = fragmentStart;
+  *length = fragmentLength;
+  return 0;
+}
+
+// Находит совпадающие фрагменты в строке, меняет входные переменные start и end
+// на индексы первого фрагмента
+// Если в строке нет фрагментов длиной более 5 символов, возвращает -1
+int findRepeatedFragment(char string[], int from, int* start, int* end) {
+  int fragmentStart = 0;
+  int fragmentLength = 0;
+  int res = findFragment(string, from, &fragmentStart, &fragmentLength);
+  if (res == -1) return -1;
+
   // Первый символ фрагмента
   char firstSymbol = string[fragmentStart];
-
-  // Находим индекс похожего символа в строке
-  int nextFragmentStart = findNextCharStart(firstSymbol, fragmentEnd, string);
-  // Если после фрагмента больше не осталось других фрагментов
-  if (nextFragmentStart == -1) {
-    return -1;
-  }
-
+  int nextFragmentStart = findNextCharIndex(firstSymbol, fragmentStart + 6, string);
+  int nextFragmentEnd = 0;
+  int nextFragmentLength = 0;
+  
   // Ищем совпадающие фрагменты
   while (1) {
-    // Если фрагментов дальше нет, то прерываем цикл и выполнение функции
+    // Меняем firstSymbol
     if (nextFragmentStart == -1) {
-      fragmentLength--;
-      if (fragmentLength > 5) {
-        fragmentStart++;
+      if (fragmentLength-1 > 5) {
+        fragmentLength -= 1;
+        fragmentStart += 1;
         firstSymbol = string[fragmentStart];
-        nextFragmentStart = findNextCharStart(firstSymbol, fragmentEnd, string);
+        nextFragmentStart = findNextCharIndex(firstSymbol, fragmentStart + 6, string);
+        if (nextFragmentStart != -1 && nextFragmentStart < fragmentStart + fragmentLength - 1) {
+          fragmentLength = nextFragmentStart - fragmentStart;
+        } 
         continue;
       }
-      return fragmentEnd;
+      return fragmentStart + fragmentLength - 1;
     }
-    int nextFragmentEnd = 0;
-    int nextFragmentLength = 0;
 
+    nextFragmentEnd = 0;
+    nextFragmentLength = 0;
+
+    // посимвольное сравнение
     int cursor = 0;
-    int keepChecking = 1;
-    while (keepChecking) {
+    int keepComparing = 1;
+    while (1) {
       nextFragmentLength++;
       if (string[fragmentStart + cursor] == string[nextFragmentStart + cursor]) {
         if (fragmentLength == nextFragmentLength) {
           nextFragmentEnd = nextFragmentStart + cursor;          
           *start = fragmentStart;
-          *end = fragmentEnd;
-          return fragmentEnd;
+          *end = fragmentStart + fragmentLength - 1;
+          return fragmentStart;
         }
       } else {
-        nextFragmentStart = findNextCharStart(firstSymbol, nextFragmentStart+cursor, string);
-        keepChecking = 0;
+        nextFragmentLength--;
+        // Если длина совпадающего фрагмента больше 5
+        if (nextFragmentLength > 5) {
+          *start = fragmentStart;
+          *end = fragmentStart + cursor - 1;
+          return fragmentStart;
+        }
+        // Если символы не совпадают, ищем следующий подходящий символ и начинаем посимвольное сравнение сначала
+        nextFragmentStart = findNextCharIndex(firstSymbol, nextFragmentStart+cursor, string);
+        break;
       }
+
       cursor++;
     }
   }
