@@ -15,9 +15,9 @@ int findRepeatedFragment(char string[], int from, int* start, int* end);
 //   скопировать их в выходную строку и удалить. Повторять этот процесс, пока такие фрагменты находятся.
 //   Остаток строки добавить в выходную.
 int main() {
-  char string[] = "123456 123456Hello123456 123456World123456 123456!";
+  // char string[] = "123456 123456Hello123456 123456World123456 123456!";
   // char string[] = "thisisstringwithsubstring";
-  // char string[] = "At server side, a software repository is typically managed by source control or repository managers. Some of the repository managers allow to aggregate other repository location into one URL and provide a caching proxy. When doing continuous builds many artifacts are produced and often centrally stored, so automatically deleting the ones which are not released is important.";
+  char string[] = "At server side, a software repository is typically managed by source control or repository managers. Some of the repository managers allow to aggregate other repository location into one URL and provide a caching proxy. When doing continuous builds many artifacts are produced and often centrally stored, so automatically deleting the ones which are not released is important.";
   int stringLength = strlen(string);
   
   char* outputString = (char*)calloc(stringLength + 1, sizeof(char));
