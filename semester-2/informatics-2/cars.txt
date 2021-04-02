@@ -1,0 +1,8 @@
+7
+"NFSWORLD", "Porshe 911", 19999
+"NYPD1234", "FORD Crown Victoria", 91291
+"A 122 MR 777", "Nissan Teana", 11111
+"ALSK22", "Dodge Ram", 987221
+"S 123 KK 154", "Land Rover Evoque", 112000
+"А211КЛ", "Лада Самара", 188282
+"1wp", "1wpdp", 1222
