@@ -40,7 +40,7 @@ TreeNode** buildCharactersList(char* string, int* charsAmount) {
   return chars;
 }
 
-TreeNode* buildHaffmanTree(TreeNode** chars, int charsAmount) {
+TreeNode* buildHuffmanTree(TreeNode** chars, int charsAmount) {
   if (charsAmount == 0) return NULL;
   if (charsAmount == 1) return *chars;
 
@@ -58,7 +58,7 @@ TreeNode* buildHaffmanTree(TreeNode** chars, int charsAmount) {
   chars[charsAmount - 1] = NULL;
   chars[charsAmount - 2] = root1;
 
-  TreeNode* root = buildHaffmanTree(chars, charsAmount-1);
+  TreeNode* root = buildHuffmanTree(chars, charsAmount-1);
 
   if (root == NULL) return root1;
   return root;
@@ -67,16 +67,20 @@ TreeNode* buildHaffmanTree(TreeNode** chars, int charsAmount) {
 // Программа должна содержать функцию  обхода дерева с выводом  его  содержимого,  функцию  добавления  вершины дерева  (ввод),  а  также  указанную  в  варианте  функцию.
 // 12.  Код Хаффмана, учитывающий частоты появления символов, строится следующим образом. Для каждого символа подсчитывается частота его появления и создается вершина двоичного дерева. Затем из множества вершин выбираются две с минимальными частотами появления и создается новая - с суммарной частотой, к которой выбранные подключаются как правое и левое поддерево. Созданная вершина включается в исходное множество, а выбранные - удаляются. Затем процесс повторяется до тех пор, пока не останется единственная вершина. Код каждого символа - это последовательность движения к его вершине от корня (левое поддерево - 0, правое - 1). Функция строит код Хаффмана для символов заданной строки.
 int main() {
-  char string[] = "Hello";
+  char string[] = "sequence";
   
   int charsAmount = 0;
-  // Строим массив TreeNode с символами и кол-вом их вхождений  
+  // Строим массив TreeNode с символами и кол-вом их вхождений в строке 
   TreeNode** chars = buildCharactersList(string, &charsAmount);
   if (chars == NULL) return -1;
   // Сортировка по убыванию
   qsort(chars, charsAmount, sizeof(TreeNode*), compareTreeNodes);
 
-  TreeNode* root = buildHaffmanTree(chars, charsAmount);
+  for (int i = 0; i < charsAmount; i++) {
+    printf("| '%c' | %d\n", chars[i]->letter, chars[i]->amount);
+  }
+
+  TreeNode* root = buildHuffmanTree(chars, charsAmount);
   
   printf("\n");
   printTree(root, 0);
